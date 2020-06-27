@@ -38,14 +38,14 @@ void read_valid_spots(std::ifstream& fin) {
 
 void write_valid_spot(std::ofstream& fout) {
     int n_valid_spots = next_valid_spots.size();
-    int maximizingPlayer = true;
+    //bool maximizingPlayer = true;
     srand(time(NULL));
     // Choose random spot. (Not random uniform here)
-    /*int index = (rand() % n_valid_spots);
-    Point p = next_valid_spots[index];*/
+    int index = (rand() % n_valid_spots);
+    Point p = next_valid_spots[index];
 
     // depth, nodeIndex, maximizingPlayer, next_valid_spots, alpha, beta
-    minimax(0, 0, maximizingPlayer, next_valid_spots); 
+    //minimax(0, 0, maximizingPlayer, next_valid_spots); 
     
     // Remember to flush the output to ensure the last action is written to file.
     fout << p.x << " " << p.y << std::endl;

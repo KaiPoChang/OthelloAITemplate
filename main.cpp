@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <cassert>
+using namespace std;
 
 struct Point {
     int x, y;
@@ -137,6 +138,7 @@ public:
     }
     bool put_disc(Point p) {
         if(!is_spot_valid(p)) {
+            cout << "You invalid disc position is: (" << p.x << ", " << p.y << ")" << endl;  
             winner = get_next_player(cur_player);
             done = true;
             return false;
