@@ -128,10 +128,50 @@ void put_disc(Point p, array<array<int, SIZE>, SIZE> &board, int disc) {
 }
 
 int set_heuristic(array<array<int, SIZE>, SIZE> board, int player) {
-    int my_discs = 0, opp_discs = 0;
-    int c = 0, l = 0, m = 0;
+    int my_discs = 0, opp_discs = 0, my_front_discs = 0, opp_front_discs = 0;
+    int p = 0, c = 0, l = 0, m = 0, f = 0, d = 0;
+
+    int X1[] = {-1, -1, 0, 1, 1, 1, 0, -1};
+	int Y1[] = {0, 1, 1, 1, 0, -1, -1, -1};
+    int V[8][8] = {
+        {2000, -300, 11, 8, 8, 11, -300, 2000},
+        {-300, -700, -4, 1, 1, -4, -700, -300},
+        {11, -4, 2, 2, 2, 2, -4, 11}, 
+        {8, 1, 2, -3, -3, 2, 1, 8}, 
+        {8, 1, 2, -3, -3, 2, 1, 8}, 
+        {11, -4, 2, 2, 2, 2, -4, 11}, 
+        {-300, -700, -4, 1, 1, -4, -700, -300},
+        {2000, -300, 11, 8, 8, 11, -300, 2000}
+    };
+
+    // Piece difference, frontier disks and disk squares
+    for (int i=0; i<8; i++){
+        for (int j=0; j<8; j++){
+            if (board[i][j] == player){
+                d += V[i][j];
+                my_discs++;
+            }else if (board[i][j] == get_next_player(player)){
+                d -= V[i][j];
+                opp_discs++;
+            }
+            if (board[i][j] != 0){
+                for (int k=0; k<8; k++){
+                    int x = i + X1[k];
+                    int y = j + Y1[k];
+                    if (x >= 0 && x < 8 && y >= 0 && y < 8 && board[x][y] == 0){
+                        if (board[i][j] == player) my_front_discs++;
+                        else opp_front_discs++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    p = my_discs - opp_discs;
+    f = (-1)*(my_front_discs - opp_front_discs);
 
     // Corner occupancy 
+    my_discs = opp_discs = 0;
     if (board[0][0] == player) my_discs++;
     else if (board[0][0] == get_next_player(player)) opp_discs++;
     if (board[0][7] == player) my_discs++;
@@ -140,7 +180,7 @@ int set_heuristic(array<array<int, SIZE>, SIZE> board, int player) {
     else if (board[7][0] == get_next_player(player)) opp_discs++;
     if (board[7][7] == player) my_discs++;
     else if (board[7][7] == get_next_player(player)) opp_discs++;
-    c = (my_discs - opp_discs);
+    c = 25*(my_discs - opp_discs);
 
     // Corner closeness
     my_discs = opp_discs = 0;
@@ -176,14 +216,14 @@ int set_heuristic(array<array<int, SIZE>, SIZE> board, int player) {
         if (board[7][6] == player) my_discs++;
         else if (board[7][6] == get_next_player(player)) opp_discs++;
     }
-    l = (-1)*(my_discs - opp_discs);
+    l = (-13) * (my_discs - opp_discs);
     // Mobility
     vector<Point> my_discs_vec = get_valid_spots(board, player);
     vector<Point> opp_discs_vec = get_valid_spots(board, get_next_player(player));
     m = my_discs_vec.size() - opp_discs_vec.size();
 
     // final weighted score
-    int score = (5000* c) + (3000 * l) + (80 * m);
+    int score = (10 * p) + (2000* c) + (500 * l) + (60 * m) + (50 * f) + (10 * d);
 	return score;
 }
 
